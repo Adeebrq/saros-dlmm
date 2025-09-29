@@ -1,103 +1,269 @@
-import Image from "next/image";
+// src/pages/index.tsx - FIXED VERSION
+
+"use client"
+
+import { useState, useEffect } from 'react';
+import { DLMMBacktester } from './lib/backtester';
+import { StrategyType, BacktestResult, PriceData } from './types/index';
+import BacktesterForm from './components/BacktesterForm';
+import ResultsDisplay from './components/ResultsDisplay';
+import { sarosService } from './lib/sarosService';
+
+interface FormData {
+  investmentAmount: number;
+  strategyType: StrategyType;
+  tokenPair: string;
+  concentrationMin: number;
+  concentrationMax: number;
+  rebalanceThreshold: number;
+  timePeriod: string;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main  className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [results, setResults] = useState<BacktestResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [currentStrategy, setCurrentStrategy] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [selectedTokenPair, setSelectedTokenPair] = useState<string>('SOL/USDC');
+  
+  // Add strategy metadata for charts
+  const [strategyMetadata, setStrategyMetadata] = useState<{
+    types: StrategyType[];
+    ranges: Array<{ min: number; max: number } | undefined>;
+  }>({ types: [], ranges: [] });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // FIXED: Test connection when token pair changes
+  useEffect(() => {
+    const testRealSarosIntegration = async () => {
+      console.log(`🚀 Testing REAL Saros DLMM SDK integration for ${selectedTokenPair}...`);
+      
+      try {
+        const success = await sarosService.testConnection(selectedTokenPair); // ← NOW DYNAMIC
+        
+        if (success) {
+          console.log(`🎉 SUCCESS: Real Saros SDK integration working for ${selectedTokenPair}!`);
+          
+          // Test getting real pool metadata for the selected pair
+          const metadata = await sarosService.getPoolMetadata(selectedTokenPair); // ← NOW DYNAMIC
+          console.log(`📊 Real pool metadata for ${selectedTokenPair}:`, metadata);
+        }
+      } catch (error) {
+        console.error(`❌ Real Saros integration test failed for ${selectedTokenPair}:`, error);
+      }
+    };
+    
+    testRealSarosIntegration();
+  }, [selectedTokenPair]); // ← DEPENDENCY ON selectedTokenPair
+
+  const fetchPriceData = async (tokenPair: string, timePeriod: string): Promise<PriceData[]> => {
+    const response = await fetch(`/api/price-data?tokenPair=${tokenPair}&timePeriod=${timePeriod}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch price data');
+    }
+
+    const data = await response.json();
+    return data.data;
+  };
+
+  const handleFormSubmit = async (formData: FormData) => {
+    setLoading(true);
+    setResults([]);
+    setError('');
+    setSelectedTokenPair(formData.tokenPair);
+    
+    try {
+      console.log('Fetching real price data for:', formData.tokenPair, formData.timePeriod);
+      
+      // Fetch real price data
+      const priceData = await fetchPriceData(formData.tokenPair, formData.timePeriod);
+      
+      console.log(`Got ${priceData.length} price data points`);
+      
+      const backtester = new DLMMBacktester();
+
+      // Auto-correct concentrated range if it doesn't include the current price
+      let concentrationRange = undefined as undefined | { min: number; max: number };
+      if (formData.strategyType === StrategyType.CONCENTRATED) {
+        const startPrice = priceData[0]?.price;
+        const userMin = formData.concentrationMin;
+        const userMax = formData.concentrationMax;
+        const userRangeValid = Number.isFinite(startPrice) && userMin < userMax && startPrice >= userMin && startPrice <= userMax;
+        const autoMin = Number.isFinite(startPrice) ? startPrice * 0.96 : userMin;
+        const autoMax = Number.isFinite(startPrice) ? startPrice * 1.04 : userMax;
+        concentrationRange = userRangeValid ? { min: userMin, max: userMax } : { min: autoMin, max: autoMax };
+      }
+
+      const result = await backtester.simulateStrategy({
+        investmentAmount: formData.investmentAmount,
+        priceData: priceData,
+        strategyType: formData.strategyType,
+        concentrationRange,
+        rebalanceThreshold: formData.rebalanceThreshold,
+        tokenPair: formData.tokenPair
+      });
+
+      setResults([result]);
+      setCurrentStrategy(formData.strategyType);
+      
+      // Set metadata for charts
+      setStrategyMetadata({
+        types: [formData.strategyType],
+        ranges: [concentrationRange]
+      });
+      
+    } catch (error) {
+      console.error('Backtest failed:', error);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runStrategyComparison = async () => {
+    setLoading(true);
+    setError('');
+    setSelectedTokenPair('SOL/USDC');
+    
+    try {
+      // Use the currently selected token pair for comparison
+      const comparisonTokenPair = selectedTokenPair; // ← USE CURRENT SELECTION
+      const defaultTimePeriod = '90d';
+      
+      console.log(`Fetching price data for strategy comparison on ${comparisonTokenPair}...`);
+      const priceData = await fetchPriceData(comparisonTokenPair, defaultTimePeriod);
+      
+      const backtester = new DLMMBacktester();
+      const concentratedRange = { min: priceData[0].price * 0.96, max: priceData[0].price * 1.04 };
+      
+      const strategies = [
+        {
+          investmentAmount: 5000,
+          priceData: priceData,
+          strategyType: StrategyType.CONCENTRATED,
+          concentrationRange: concentratedRange,
+          tokenPair: comparisonTokenPair // ← USE CURRENT SELECTION
+        },
+        {
+          investmentAmount: 5000,
+          priceData: priceData,
+          strategyType: StrategyType.WIDE,
+          tokenPair: comparisonTokenPair // ← USE CURRENT SELECTION
+        },
+        {
+          investmentAmount: 5000,
+          priceData: priceData,
+          strategyType: StrategyType.ACTIVE_REBALANCING,
+          rebalanceThreshold: 0.05,
+          tokenPair: comparisonTokenPair // ← USE CURRENT SELECTION
+        }
+      ];
+
+      const comparisonPromises = strategies.map(strategy => 
+        backtester.simulateStrategy(strategy)
+      );
+      
+      const comparisonResults = await Promise.all(comparisonPromises);
+
+      setResults(comparisonResults);
+      setCurrentStrategy('comparison');
+      
+      // Set metadata for charts
+      setStrategyMetadata({
+        types: [StrategyType.CONCENTRATED, StrategyType.WIDE, StrategyType.ACTIVE_REBALANCING],
+        ranges: [concentratedRange, undefined, undefined]
+      });
+      
+    } catch (error) {
+      console.error('Comparison failed:', error);
+      setError(error instanceof Error ? error.message : 'Comparison failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStrategyNames = () => {
+    if (currentStrategy === 'comparison') {
+      return ['Concentrated', 'Wide Range', 'Active Rebalancing'];
+    }
+    return [currentStrategy.replace('_', ' ')];
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Saros DLMM Strategy Backtester
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Analyze liquidity provider strategies with real historical data
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Sidebar - Form */}
+          <div className="lg:col-span-1">
+            <BacktesterForm 
+              onSubmit={handleFormSubmit} 
+              loading={loading}
+              onCompare={runStrategyComparison}
+              selectedTokenPair={selectedTokenPair}
+            />
+
+            {/* Status Messages */}
+            {loading && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-md">
+                <p className="text-blue-700 text-sm">
+                  🔄 Fetching real price data for {selectedTokenPair} and running backtest...
+                </p>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 rounded-md">
+                <p className="text-red-700 text-sm">
+                  ❌ {error}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Content - Results */}
+          <div className="lg:col-span-2">
+            {results.length > 0 ? (
+              <ResultsDisplay 
+                results={results} 
+                strategyNames={getStrategyNames()}
+                strategyTypes={strategyMetadata.types}
+                concentrationRanges={strategyMetadata.ranges}
+                poolHealthData={results[0]?.poolHealth}
+                tokenPair={selectedTokenPair}
+              />
+            ) : (
+              <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+                <h3 className="text-xl text-gray-500 mb-4">
+                  No backtest results yet
+                </h3>
+                <p className="text-gray-400 mb-4">
+                  Configure your strategy settings and run a backtest to see results
+                </p>
+                <div className="text-sm text-gray-500">
+                  <p>✅ Real price data integration ready</p>
+                  <p>✅ Multiple token pairs supported</p>
+                  <p>✅ Historical periods: 7d to 1y</p>
+                  <p>✅ Interactive charts enabled</p>
+                  <p className="text-blue-600">🔍 Testing pool: {selectedTokenPair}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
