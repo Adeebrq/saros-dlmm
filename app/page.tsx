@@ -245,21 +245,71 @@ export default function Home() {
                 tokenPair={selectedTokenPair}
               />
             ) : (
-              <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-                <h3 className="text-xl text-gray-500 mb-4">
-                  No backtest results yet
-                </h3>
-                <p className="text-gray-400 mb-4">
-                  Configure your strategy settings and run a backtest to see results
-                </p>
-                <div className="text-sm text-gray-500">
-                  <p>✅ Real price data integration ready</p>
-                  <p>✅ Multiple token pairs supported</p>
-                  <p>✅ Historical periods: 7d to 1y</p>
-                  <p>✅ Interactive charts enabled</p>
-                  <p className="text-blue-600">🔍 Testing pool: {selectedTokenPair}</p>
-                </div>
-              </div>
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg p-8 text-center border border-purple-200 heroBox transition-all duration-300">
+  {/* Welcome Icon */}
+  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    </svg>
+  </div>
+
+  {/* Friendly Welcome Message */}
+  <h3 className="text-2xl font-bold text-gray-800 mb-3 rounded-lg transition-all duration-300">
+    Ready to Optimize Your LP Strategy? 
+  </h3>
+  
+  <p className="text-lg text-gray-600 mb-6 max-w-md mx-auto">
+    Get started by selecting your investment amount, token pair, and strategy type on the left
+  </p>
+
+  {/* Quick Start Steps */}
+  <div className="bg-white/20 rounded-lg p-6 mb-6 border border-purple-200">
+    <h4 className="font-semibold text-gray-800 mb-4">How it works:</h4>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div className="flex flex-col items-center">
+        <div className="w-8 h-8 bg-purple-400 text-white rounded-full flex items-center justify-center mb-2 font-bold">1</div>
+        <span className="text-gray-600">Choose investment & token pair</span>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="w-8 h-8  bg-purple-500 text-white rounded-full flex items-center justify-center mb-2 font-bold">2</div>
+        <span className="text-gray-600">Select strategy & time period</span>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="w-8 h-8  bg-purple-600 text-white rounded-full flex items-center justify-center mb-2 font-bold">3</div>
+        <span className="text-gray-600">Analyze results & optimize</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Feature Highlights */}
+  <div className="grid grid-cols-2 gap-3 text-sm mb-6 ml-32 mx-auto">
+    <div className="flex items-start justify-start space-x-2 text-green-700">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+      <span>Real Saros Pool Data</span>
+    </div>
+    <div className="flex items-start justify-start  space-x-2 text-green-700">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+      <span>Historical Analysis</span>
+    </div>
+    <div className="flex items-start justify-start  space-x-2 text-green-700">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+      <span>Interactive Charts</span>
+    </div>
+    <div className="flex items-start justify-start r space-x-2 text-green-700">
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+      <span>Multiple Strategies</span>
+    </div>
+  </div>
+</div>
+
             )}
           </div>
         </div>

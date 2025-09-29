@@ -20,8 +20,8 @@ export default function PerformanceChart({ dailyResults, strategyName }: Perform
   }));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h3 className="text-lg font-semibold mb-4">{strategyName} - Performance Timeline</h3>
+    <div className="bg-white p-6 rounded-lg shadow-lg poolHeader ">
+      <h3 className="text-lg font-semibold mb-4 ">{strategyName} - Performance Timeline</h3>
       
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>

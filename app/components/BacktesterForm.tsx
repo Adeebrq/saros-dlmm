@@ -45,7 +45,7 @@ export default function BacktesterForm({
   };
 
   return (
-    <div className="bg-white text-black rounded-lg shadow-lg p-6">
+    <div className="bg-white text-black rounded-lg shadow-lg p-6 leftBox transition-all duration-300">
       <h2 className="text-2xl font-semibold mb-6">Backtest Configuration</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -74,7 +74,7 @@ export default function BacktesterForm({
           <select
             value={formData.tokenPair}
             onChange={(e) => updateFormData("tokenPair", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="UNIBTC/XBTC">UNIBTC/XBTC</option>
             <option value="USDS/USDC">USDS/USDC</option>
@@ -93,7 +93,7 @@ export default function BacktesterForm({
           </label>
           <div className="space-y-2">
             {Object.values(StrategyType).map((strategy) => (
-              <label key={strategy} className="flex items-center">
+              <label key={strategy} className="flex items-center fel">
                 <input
                   type="radio"
                   name="strategy"
@@ -115,7 +115,7 @@ export default function BacktesterForm({
 
         {/* Concentrated Strategy Settings */}
         {formData.strategyType === StrategyType.CONCENTRATED && (
-          <div className="bg-gray-50 p-4 rounded-md">
+          <div className="bg-white/30 p-4 rounded-md">
             <h4 className="font-medium mb-3">Concentration Range</h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -194,12 +194,31 @@ export default function BacktesterForm({
 
         {/* Submit Button */}
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Running Backtest..." : "Run Backtest"}
-        </button>
+  type="submit"
+  disabled={loading}
+  className={`
+    w-full
+    px-4 py-3 sm:px-6 sm:py-3
+    rounded-md
+    text-white font-semibold
+    text-sm sm:text-base
+    active:scale-95
+    transform
+    bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] 
+    hover:from-[#2D1B85] hover:to-[#4A2F9A]
+    transition-all duration-300 hover:scale-105
+    shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)]
+    hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]
+    ${loading 
+      ? "pointer-events-none opacity-60 cursor-not-allowed" 
+      : "cursor-pointer"
+    }
+  `}
+  
+>
+  {loading ? "Running Backtest..." : "Run Backtest"}
+</button>
+
 
         {/* Compare All Strategies Button (inside form) */}
         <div className="mt-0">
@@ -207,7 +226,24 @@ export default function BacktesterForm({
             type="button"
             onClick={onCompare}
             disabled={loading || !onCompare}
-            className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`
+                w-full
+                px-4 py-3 sm:px-6 sm:py-3
+                rounded-md
+                text-white font-semibold
+                text-sm sm:text-base
+                active:scale-95
+                transform
+                bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] 
+                hover:from-[#2D1B85] hover:to-[#4A2F9A]
+                transition-all duration-300 hover:scale-105
+                shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)]
+                hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]
+                ${loading 
+                  ? "pointer-events-none opacity-60 cursor-not-allowed" 
+                  : "cursor-pointer"
+                }
+              `}
           >
             {loading ? 'Running...' : `Compare All Strategies${selectedTokenPair ? ` (${selectedTokenPair})` : ''}`}
           </button>

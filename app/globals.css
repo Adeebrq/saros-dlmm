@@ -24,3 +24,47 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Header background image swap for welcome title */
+.heroTitle {
+  background-image: url('/right1.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.heroTitle:hover {
+  background-image: url('/right2.png');
+}
+
+/* Welcome hero box background image swap */
+.heroBox {
+  background-image: url('/right1.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.heroBox:hover {
+  background-image: url('/right2.svg');
+}
+
+/* Left sidebar form box background image swap */
+.leftBox {
+  background-image: url('/left1.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.leftBox:hover {
+  background-image: url('/left2.png');
+}
+
+/* Results header background image swap */
+.poolHeader {
+  background-image: url('/header1.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.poolHeader:hover {
+  background-image: url('/header2.png');
+}
