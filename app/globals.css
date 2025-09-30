@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+
+  --background: oklch(1 0 0);
   --foreground: #171717;
+  --border: oklch(0.92 0.004 286.32);
+  --edge: color-mix(in oklab, var(--border) 64%, var(--background));
+
 }
 
 @theme inline {
@@ -10,20 +14,52 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-edge: var(--edge);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+  --background: oklch(1 0 0);
     --foreground: #ededed;
   }
 }
+
+@utility screen-line-before {
+  @apply relative before:absolute before:top-0 before:-left-[100vw] before:z-10 before:h-px before:w-[200vw] before:bg-edge;
+}
+
+@utility screen-line-after {
+  @apply relative after:absolute after:bottom-0 after:-left-[100vw] after:z-10 after:h-px after:w-[200vw] after:bg-edge;
+}
+
+@utility screen-line-before-inner {
+  @apply relative before:absolute before:top-0 before:left-0 before:z-10 before:h-px before:w-full before:bg-edge;
+}
+
+@utility screen-line-after-inner {
+  @apply relative after:absolute after:bottom-0 after:left-0 after:z-10 after:h-px after:w-full after:bg-edge;
+}
+
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@font-face {
+  font-family: 'Dimitri';
+  src: url('/dimitri.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Then use it in your classes */
+.dimitri-font {
+  font-family: 'Dimitri', sans-serif;
+}
+
 
 /* Header background image swap for welcome title */
 .heroTitle {

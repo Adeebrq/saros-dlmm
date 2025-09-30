@@ -2,6 +2,8 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DailyResult } from '../types/index';
+import { PanelTitle, Panel, PanelContent, PanelHeader } from "../components/panel";
+
 
 interface PerformanceChartProps {
   dailyResults: DailyResult[];
@@ -20,8 +22,8 @@ export default function PerformanceChart({ dailyResults, strategyName }: Perform
   }));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg poolHeader ">
-      <h3 className="text-lg font-semibold mb-4 ">{strategyName} - Performance Timeline</h3>
+    <div className="bg-white p-2 ">
+      <h3 className="text-lg font-semibold border-y border-edge">{strategyName} - Performance Timeline</h3>
       
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>

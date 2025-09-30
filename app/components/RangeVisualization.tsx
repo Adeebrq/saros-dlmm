@@ -30,8 +30,8 @@ export default function RangeVisualization({
   const yAxisMax = maxPrice + (priceRange * 0.1);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg poolHeader">
-      <h3 className="text-lg font-semibold mb-4">{strategyName} - Price vs Liquidity Range</h3>
+    <div className="bg-white p-2">
+      <h3 className="text-lg font-semibold mb-4 border-y border-edge">{strategyName} - Price vs Liquidity Range</h3>
       
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>

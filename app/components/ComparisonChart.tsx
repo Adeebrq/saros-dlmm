@@ -2,6 +2,8 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BacktestResult } from '../types/index';
+import { PanelTitle, Panel, PanelContent, PanelHeader } from "../components/panel";
+
 
 interface ComparisonChartProps {
   results: BacktestResult[];
@@ -19,8 +21,8 @@ export default function ComparisonChart({ results, strategyNames }: ComparisonCh
   }));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg poolHeader">
-      <h3 className="text-lg font-semibold mb-4">Strategy Performance Comparison</h3>
+    <div className="bg-white p-0">
+      <PanelTitle>Strategy Performance Comparison</PanelTitle>
       
       <div className="space-y-6">
         {/* ROI Comparison */}
