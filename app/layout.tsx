@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Saroscope",
   description: "Master Saros DLMM strategies with data-driven insights",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
