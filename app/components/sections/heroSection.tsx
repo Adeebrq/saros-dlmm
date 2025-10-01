@@ -64,9 +64,9 @@ export default function HeroSection() {
     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white dimitri-font">
       SaroScope
     </h1>
-    <p className="text-gray-600 text-xs sm:text-sm md:text-base -mt-1 sm:-mt-2">
+    {/* <p className="text-gray-600 text-xs sm:text-sm md:text-base -mt-1 sm:-mt-2">
       Master Saros DLMM strategies with data-driven insights
-    </p>
+    </p> */}
   </div>
 
   <div className="font-bold px-0 sm:px-4 w-full sm:w-auto">
