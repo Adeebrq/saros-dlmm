@@ -29,7 +29,7 @@ export class DLMMBacktester {
       };
       return formatted;
       
-    } catch (error) {
+    } catch {
       
       // Fallback to enhanced simulation if SDK fails
       return this.simulateStrategyFallback(params);
@@ -98,7 +98,7 @@ export class DLMMBacktester {
 
   // Keep all your existing simulation methods as fallbacks
   private simulateConcentratedStrategy(params: StrategyParams): BacktestResult {
-    const { investmentAmount, priceData, concentrationRange, tokenPair } = params;
+    const { investmentAmount, priceData, concentrationRange } = params;
     
     if (!concentrationRange) {
       throw new Error('Concentration range required for concentrated strategy');
@@ -162,7 +162,7 @@ export class DLMMBacktester {
   }
 
   private simulateWideStrategy(params: StrategyParams): BacktestResult {
-    const { investmentAmount, priceData, tokenPair } = params;
+    const { investmentAmount, priceData } = params;
     
     const initialPrice = priceData[0].price;
     const wideRange = {
@@ -227,7 +227,7 @@ export class DLMMBacktester {
   }
 
   private simulateActiveStrategy(params: StrategyParams): BacktestResult {
-    const { investmentAmount, priceData, rebalanceThreshold = 0.05, tokenPair } = params;
+    const { investmentAmount, priceData, rebalanceThreshold = 0.05 } = params;
     
     let totalFees = 0;
     let totalGasCosts = 0;

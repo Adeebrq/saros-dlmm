@@ -2,19 +2,19 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas'
+import { useRive } from '@rive-app/react-canvas'
 
 export default function HeroSection() {
   const router = useRouter();
   
   // Rive hooks for top right animation
-  const { rive: topRightRive, RiveComponent: TopRightRive } = useRive({
+  const { RiveComponent: TopRightRive } = useRive({
     src: '/topRight.riv',
     autoplay: true,
   });
 
   // Rive hooks for top left animation
-  const { rive: topLeftRive, RiveComponent: TopLeftRive } = useRive({
+  const { RiveComponent: TopLeftRive } = useRive({
     src: '/topLeft.riv',
     autoplay: true,
   });

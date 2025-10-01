@@ -1,7 +1,14 @@
 import { HorizontalSeparator } from "../seperator";
 import { VerticalSeparator } from "../seperator";
+import { useRouter } from "next/navigation";
 
-export const Footer = () => (
+
+
+export const Footer = () => {
+  const router= useRouter();
+
+
+  return(
   <div className="w-full border-x border-edge flex screen-line-before screen-line-after justify-center bg-white">
     <div className="flex flex-col w-fit max-w-5xl border-x border-edge  screen-line-after ">
       
@@ -17,7 +24,7 @@ export const Footer = () => (
         <div className="py-0 px-0 sm:px-8 flex flex-col items-center justify-center w-full lg:w-[922px]">
           
           {/* SaroScope Title - Top Center */}
-          <h1 className="text-3xl font-bold text-black dimitri-font mb-0">
+          <h1 className="text-3xl font-bold text-black dimitri-font mb-0 cursor-pointer" onClick={()=> router.push("/")}>
             SaroScope
           </h1>
           
@@ -47,4 +54,4 @@ export const Footer = () => (
       
     </div>
   </div>
-);
+  )};

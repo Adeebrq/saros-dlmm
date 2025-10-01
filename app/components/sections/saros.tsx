@@ -56,9 +56,9 @@ export const SarosSection = () => {
               
               {/* Description Paragraph */}
               <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-3xl mx-auto leading-relaxed mb-6 lg:mb-8 text-center">
-                Meet Saros - the game-changing DLMM protocol that's revolutionizing Solana trading. 
+                Meet Saros - the game-changing DLMM protocol that&apos;s revolutionizing Solana trading. 
                 It automatically manages your liquidity positions for maximum efficiency, processing millions in volume daily. 
-                Every tool in SaroScope runs on Saros's proven infrastructure to help you navigate the markets like a pro.
+                Every tool in SaroScope runs on Saros&apos;s proven infrastructure to help you navigate the markets like a pro.
               </p>
 
               {/* Saros Rive Animation */}

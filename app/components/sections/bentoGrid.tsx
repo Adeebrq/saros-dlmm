@@ -24,13 +24,14 @@ const useInViewport = (threshold = 0.5) => {
       { threshold }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [threshold]);
@@ -76,8 +77,9 @@ const RiveCard: React.FC<RiveCardProps> = ({
       // Try different methods to access inputs
       try {
         // Method 1: Direct access
-        const inputs1 = rive.stateMachineInputs(stateMachine);
-      } catch (e) {
+        rive.stateMachineInputs(stateMachine);
+      } catch {
+        // Silently handle errors
       }
 
       try {
@@ -85,7 +87,8 @@ const RiveCard: React.FC<RiveCardProps> = ({
         if (typeof rive.play === 'function') {
           rive.play();
         }
-      } catch (e) {
+      } catch {
+        // Silently handle errors
       }
     }
   }, [rive, stateMachine, artboard]);
@@ -98,7 +101,7 @@ const RiveCard: React.FC<RiveCardProps> = ({
         const inputs = rive.stateMachineInputs(stateMachine);
         
         if (inputs && inputs.length > 0) {
-          const activeInput = inputs.find((i: any) => i.name === activeInputName);
+          const activeInput = inputs.find((i: { name: string; fire?: () => void }) => i.name === activeInputName);
           
           if (activeInput && typeof activeInput.fire === 'function') {
             activeInput.fire();
@@ -110,7 +113,8 @@ const RiveCard: React.FC<RiveCardProps> = ({
             hasTriggeredRef.current = true;
           }
         }
-      } catch (error) {
+      } catch {
+        // Silently handle errors
       }
     }
   }, [isInView, rive, isReady, artboard, stateMachine, hasTriggeredRef, activeInputName]);
@@ -120,12 +124,13 @@ const RiveCard: React.FC<RiveCardProps> = ({
       try {
         const inputs = rive.stateMachineInputs(stateMachine);
         if (inputs) {
-          const hoverInput = inputs.find((i: any) => i.name === hoverInputName);
+          const hoverInput = inputs.find((i: { name: string; fire?: () => void }) => i.name === hoverInputName);
           if (hoverInput && typeof hoverInput.fire === 'function') {
             hoverInput.fire();
           }
         }
-      } catch (error) {
+      } catch {
+        // Silently handle errors
       }
     }
   };
@@ -139,13 +144,14 @@ const RiveCard: React.FC<RiveCardProps> = ({
       try {
         const inputs = rive.stateMachineInputs(stateMachine);
         if (inputs) {
-          const activeInput = inputs.find((i: any) => i.name === activeInputName);
+          const activeInput = inputs.find((i: { name: string; fire?: () => void }) => i.name === activeInputName);
           if (activeInput && typeof activeInput.fire === 'function') {
             activeInput.fire();
             hasTriggeredRef.current = false; // Reset so it can fire again
           }
         }
-      } catch (error) {
+      } catch {
+        // Silently handle errors
       }
     }
   };

@@ -58,7 +58,7 @@ class DLMMBacktester {
     } = params;
 
     let totalFees: number = 0;
-    let impermanentLoss: number = 0;
+    // let impermanentLoss: number = 0;
     let daysInRange: number = 0;
     const totalDays: number = priceData.length;
     const dailyResults: DailyResult[] = [];
@@ -141,27 +141,27 @@ class DLMMBacktester {
 }
 
 // Test Data and Usage
-const mockPriceData: PriceData[] = [
-  { timestamp: '2025-06-01', price: 50.0, volume: 2000000 },
-  { timestamp: '2025-06-02', price: 51.5, volume: 2200000 },
-  { timestamp: '2025-06-03', price: 49.8, volume: 1800000 },
-  { timestamp: '2025-06-04', price: 52.1, volume: 2400000 },
-  { timestamp: '2025-06-05', price: 48.5, volume: 1600000 }, // Out of range
-  { timestamp: '2025-06-06', price: 50.8, volume: 2100000 },
-  { timestamp: '2025-06-07', price: 51.2, volume: 2300000 },
-];
+// const mockPriceData: PriceData[] = [
+//   { timestamp: '2025-06-01', price: 50.0, volume: 2000000 },
+//   { timestamp: '2025-06-02', price: 51.5, volume: 2200000 },
+//   { timestamp: '2025-06-03', price: 49.8, volume: 1800000 },
+//   { timestamp: '2025-06-04', price: 52.1, volume: 2400000 },
+//   { timestamp: '2025-06-05', price: 48.5, volume: 1600000 }, // Out of range
+//   { timestamp: '2025-06-06', price: 50.8, volume: 2100000 },
+//   { timestamp: '2025-06-07', price: 51.2, volume: 2300000 },
+// ];
 
 // Test the backtester
-const backtester = new DLMMBacktester();
+// const backtester = new DLMMBacktester();
 
-const testParams: StrategyParams = {
-  investmentAmount: 5000,
-  priceData: mockPriceData,
-  concentrationRange: { min: 49, max: 52 }, // Tight range around $50
-  tokenPair: "SOL/USDC"
-};
+// const testParams: StrategyParams = {
+//   investmentAmount: 5000,
+//   priceData: mockPriceData,
+//   concentrationRange: { min: 49, max: 52 }, // Tight range around $50
+//   tokenPair: "SOL/USDC"
+// };
 
-const result = backtester.simulateConcentratedStrategy(testParams);
+// const result = backtester.simulateConcentratedStrategy(testParams);
 
 
 export default DLMMBacktester;

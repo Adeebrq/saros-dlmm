@@ -55,9 +55,9 @@ export default function RangeVisualization({
           
           <Tooltip 
             labelFormatter={(value) => `Day ${value}`}
-            formatter={(value: number, name: string, props: any) => {
+            formatter={(value: number, name: string, payload: { payload?: { inRange?: boolean } }) => {
               if (name === 'price') {
-                const isInRange = props.payload.inRange;
+                const isInRange = payload?.payload?.inRange;
                 return [`$${value.toFixed(3)}`, `Price ${isInRange ? '(In Range)' : '(Out of Range)'}`]; // ← ALSO 3 DECIMALS IN TOOLTIP
               }
               return [value, name];
@@ -70,19 +70,7 @@ export default function RangeVisualization({
             dataKey="price" 
             stroke="#8884d8" 
             strokeWidth={3}
-            dot={(props: any) => {
-              const { cx, cy, payload } = props;
-              return (
-                <circle 
-                  cx={cx} 
-                  cy={cy} 
-                  r={4} 
-                  fill={payload.inRange ? '#22c55e' : '#ef4444'}
-                  strokeWidth={2}
-                  stroke={payload.inRange ? '#16a34a' : '#dc2626'}
-                />
-              );
-            }}
+            dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}
             name="Token Price"
           />
           

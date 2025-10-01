@@ -18,10 +18,10 @@ export interface SarosBacktestResult {
 }
 
 // REAL Saros Program Addresses
-const SAROS_PROGRAM_ADDRESSES = {
-  mainnet: '1qbkdrr3z4ryLA7pZykqxvxWPoeifcVKo6ZG9CfkvVE',
-  devnet: 'EZoLi7fVCWjns7ukzjggSeDpG2GEGJbGs3MTRxAE29d4'
-};
+// const SAROS_PROGRAM_ADDRESSES = {
+//   mainnet: '1qbkdrr3z4ryLA7pZykqxvxWPoeifcVKo6ZG9CfkvVE',
+//   devnet: 'EZoLi7fVCWjns7ukzjggSeDpG2GEGJbGs3MTRxAE29d4'
+// };
 
 // SIMPLIFIED Pool Config - Let SDK provide decimals dynamically
 const REAL_SAROS_POOLS = {
@@ -105,7 +105,7 @@ export class SarosService {
     try {
       const poolAddresses = await this.liquidityBook.fetchPoolAddresses();
       return poolAddresses;
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -207,8 +207,8 @@ export class SarosService {
       
       return realData;
       
-    } catch (error) {
-      throw error;
+    } catch {
+      throw new Error('Failed to extract pool data');
     }
   }
 
@@ -268,7 +268,7 @@ export class SarosService {
         poolHealthData
       };
 
-    } catch (error) {
+    } catch {
       return {
         results: [],
         poolHealthData: {
@@ -283,7 +283,7 @@ export class SarosService {
   }
 
   // Realistic warnings
-  private generatePoolWarning(poolData: any, investmentAmount: number): string | undefined {
+  private generatePoolWarning(poolData: { totalLiquidity: number; volume24h?: number; isActive?: boolean }, investmentAmount: number): string | undefined {
     if (poolData.totalLiquidity < 1000) {
       return `Extremely low liquidity ($${poolData.totalLiquidity.toFixed(2)}) - returns will be near zero`;
     }
@@ -308,7 +308,7 @@ export class SarosService {
   private async calculateWithDynamicData(
     params: StrategyParams,
     priceData: PriceData[],
-    poolData: any
+    poolData: { totalLiquidity: number; volume24h?: number; isActive?: boolean; feeRate?: number }
   ): Promise<DailyResult[]> {
     const results: DailyResult[] = [];
     let totalFees = 0;
@@ -338,7 +338,7 @@ export class SarosService {
         dailyFees = this.calculateRealisticSarosFees(
           params.investmentAmount,
           poolData.totalLiquidity,
-          poolData.feeRate,
+          poolData.feeRate || 0.003,
           dayData.volume,
           yourActualPoolShare
         );
@@ -364,7 +364,7 @@ export class SarosService {
       });
     }
     
-    const daysInRange = results.filter(r => r.inRange).length;
+    // const daysInRange = results.filter(r => r.inRange).length;
     
     return results;
   }
@@ -436,9 +436,9 @@ export class SarosService {
   // Test connection with dynamic data
   async testConnection(tokenPair: string = 'SOL/USDC'): Promise<boolean> {
     try {
-      const poolData = await this.extractRealPoolData(tokenPair);
+      await this.extractRealPoolData(tokenPair);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -454,7 +454,7 @@ export class SarosService {
       
       return { metadata, poolConfig };
       
-    } catch (error) {
+    } catch {
       return { error: 'Failed to fetch pool metadata' };
     }
   }

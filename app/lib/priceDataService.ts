@@ -1,17 +1,17 @@
 import { PriceData } from '../types/index';
 
-interface JupiterPriceResponse {
-  data: {
-    [tokenMint: string]: {
-      id: string;
-      mintSymbol: string;
-      vsToken: string;
-      vsTokenSymbol: string;
-      price: number;
-    };
-  };
-  timeTaken: number;
-}
+// interface JupiterPriceResponse {
+//   data: {
+//     [tokenMint: string]: {
+//       id: string;
+//       mintSymbol: string;
+//       vsToken: string;
+//       vsTokenSymbol: string;
+//       price: number;
+//     };
+//   };
+//   timeTaken: number;
+// }
 
 interface BirdeyeHistoricalResponse {
   data: {
@@ -50,7 +50,8 @@ export class PriceDataService {
       if (birdeyeData.length > 0) {
         return birdeyeData;
       }
-    } catch (error) {
+    } catch {
+      // Handle error silently
     }
 
     try {
@@ -59,7 +60,8 @@ export class PriceDataService {
       if (coingeckoData.length > 0) {
         return coingeckoData;
       }
-    } catch (error) {
+    } catch {
+      // Handle error silently
     }
 
     return this.generateMockData(timePeriod);

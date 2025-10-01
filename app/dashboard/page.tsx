@@ -25,7 +25,7 @@ export default function Home() {
   const [results, setResults] = useState<BacktestResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentStrategy, setCurrentStrategy] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  // const [error, setError] = useState<string>('');
   const [selectedTokenPair, setSelectedTokenPair] = useState<string>('');
 
   // Update runStrategyComparison to accept FormData:
@@ -44,9 +44,10 @@ export default function Home() {
         
         if (success) {
           // Test getting real pool metadata for the selected pair
-          const metadata = await sarosService.getPoolMetadata(selectedTokenPair); // ← NOW DYNAMIC
+          // const metadata = await sarosService.getPoolMetadata(selectedTokenPair); // ← NOW DYNAMIC
         }
-      } catch (error) {
+      } catch {
+        // Handle error silently
       }
     };
     
@@ -68,7 +69,7 @@ export default function Home() {
   const handleFormSubmit = async (formData: FormData) => {
     setLoading(true);
     setResults([]);
-    setError('');
+    // setError('');
     setSelectedTokenPair(formData.tokenPair);
     
     try {
@@ -107,8 +108,8 @@ export default function Home() {
         ranges: [concentrationRange]
       });
       
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } catch {
+      // Handle error silently
     } finally {
       setLoading(false);
     }
@@ -116,7 +117,7 @@ export default function Home() {
 
   const runStrategyComparison = async (formData: FormData) => { // ← Accept form data
     setLoading(true);
-    setError('');
+    // setError('');
     setSelectedTokenPair(formData.tokenPair);
     
     try {
@@ -176,8 +177,8 @@ export default function Home() {
         ranges: [concentratedRange, undefined, undefined]
       });
       
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Comparison failed');
+    } catch {
+      // Handle error silently
     } finally {
       setLoading(false);
     }
@@ -202,18 +203,18 @@ export default function Home() {
       />
     );
   }
-  function SeparatorHeader({ className }: { className?: string }) {
-    return (
-      <div
-        className={cn(
-          "relative flex h-3 w-full overflow-hidden border-y border-edge",
-          "before:absolute before:left-0 before:z-10 before:h-8 before:w-full",
-          "before:bg-[repeating-linear-gradient(315deg,var(--pattern-foreground)_0,var(--pattern-foreground)_1px,transparent_0,transparent_50%)] before:bg-size-[10px_10px] before:[--pattern-foreground:var(--color-edge)]/56",
-          className
-        )}
-      />
-    );
-  }
+  // function SeparatorHeader({ className }: { className?: string }) {
+  //   return (
+  //     <div
+  //       className={cn(
+  //         "relative flex h-3 w-full overflow-hidden border-y border-edge",
+  //         "before:absolute before:left-0 before:z-10 before:h-8 before:w-full",
+  //         "before:bg-[repeating-linear-gradient(315deg,var(--pattern-foreground)_0,var(--pattern-foreground)_1px,transparent_0,transparent_50%)] before:bg-size-[10px_10px] before:[--pattern-foreground:var(--color-edge)]/56",
+  //         className
+  //       )}
+  //     />
+  //   );
+  // }
   function VerticalSeparator({ className }: { className?: string }) {
     return (
       <div

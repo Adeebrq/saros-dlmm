@@ -71,7 +71,7 @@ export interface SarosBinData {
     reserveX: number;
     reserveY: number;
     totalSupply: number;
-    liquidityShare?: any;
+    liquidityShare?: unknown;
   }
   
   export interface SarosPoolInfo {

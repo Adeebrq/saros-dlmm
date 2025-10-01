@@ -49,7 +49,7 @@ export default function ResultsDisplay({
   const getPoolStatus = () => {
     if (!poolHealthData) return { type: 'unknown', message: 'Pool data unavailable' };
     
-    const { totalLiquidity, volume24h, isActive } = poolHealthData;
+    const { totalLiquidity, volume24h } = poolHealthData;
     
     if (totalLiquidity < 1000 && volume24h < 100) {
       return { 

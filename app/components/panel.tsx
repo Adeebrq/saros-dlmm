@@ -26,20 +26,8 @@ function PanelHeader({ className, ...props }: React.ComponentProps<"div">) {
 
 function PanelTitle({
   className,
-  asChild = false,
   ...props
-}: React.ComponentProps<"h2"> & { asChild?: boolean }) {
-  // Custom implementation without Radix Slot
-  if (asChild) {
-    const child = React.Children.only(props.children) as React.ReactElement<any>;
-    return React.cloneElement(child, {
-      "data-slot": "panel-title",
-      className: cn("text-3xl font-semibold", className, child.props?.className),
-      ...props,
-      children: child.props?.children,
-    });
-  }
-
+}: React.ComponentProps<"h2">) {
   return (
     <h2
       data-slot="panel-title"

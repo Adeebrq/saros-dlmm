@@ -2,7 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DailyResult } from '../types/index';
-import { PanelTitle, Panel, PanelContent, PanelHeader } from "../components/panel";
+// import { PanelTitle, Panel, PanelContent, PanelHeader } from "../components/panel";
 
 
 interface PerformanceChartProps {

@@ -27,7 +27,6 @@ export default function BacktesterForm({
   onSubmit,
   loading,
   onCompare,
-  selectedTokenPair = '',
   onTokenPairChange,
 }: BacktesterFormProps) {
   const [formData, setFormData] = useState<FormData>({
@@ -115,7 +114,7 @@ export default function BacktesterForm({
         id: loadingToastId,
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       // Update loading toast to error
       toast.error('Failed to run backtest. Please try again.', {
         id: loadingToastId,
@@ -156,7 +155,7 @@ export default function BacktesterForm({
         id: loadingToastId,
         duration: 3000,
       });
-    } catch (error) {
+    } catch {
       // Error toast
       toast.error('Failed to compare strategies. Please try again.', {
         id: loadingToastId,
@@ -166,12 +165,12 @@ export default function BacktesterForm({
   };
   
 
-  const updateFormData = (field: keyof FormData, value: any) => {
+  const updateFormData = (field: keyof FormData, value: string | number | StrategyType) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     
     // Optional: Show info toasts for certain field updates
     if (field === 'strategyType') {
-      toast.success(`Strategy changed to ${value.replace('_', ' ').toLowerCase()}`, {
+      toast.success(`Strategy changed to ${String(value).replace('_', ' ').toLowerCase()}`, {
         duration: 2000,
         position: 'bottom-right',
       });
@@ -292,9 +291,7 @@ export default function BacktesterForm({
           {formData.strategyType === StrategyType.CONCENTRATED && (
             <Panel className="bg-white/30">
               <PanelHeader>
-                <PanelTitle asChild>
-                  <h4 className="font-medium mb-0">Concentration Range</h4>
-                </PanelTitle>
+                <PanelTitle className="font-medium mb-0">Concentration Range</PanelTitle>
               </PanelHeader>
               <PanelContent className="grid grid-cols-2 gap-4">
                 <div>
@@ -337,9 +334,7 @@ export default function BacktesterForm({
           {formData.strategyType === StrategyType.ACTIVE_REBALANCING && (
             <Panel className="bg-gray-50">
               <PanelHeader>
-                <PanelTitle asChild>
-                  <h4 className="font-medium mb-3">Rebalancing Settings</h4>
-                </PanelTitle>
+                <PanelTitle className="font-medium mb-3">Rebalancing Settings</PanelTitle>
               </PanelHeader>
               <PanelContent>
                 <div>
