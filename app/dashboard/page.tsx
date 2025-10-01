@@ -40,20 +40,14 @@ export default function Home() {
   // FIXED: Test connection when token pair changes
   useEffect(() => {
     const testRealSarosIntegration = async () => {
-      console.log(`🚀 Testing REAL Saros DLMM SDK integration for ${selectedTokenPair}...`);
-      
       try {
         const success = await sarosService.testConnection(selectedTokenPair); // ← NOW DYNAMIC
         
         if (success) {
-          console.log(`🎉 SUCCESS: Real Saros SDK integration working for ${selectedTokenPair}!`);
-          
           // Test getting real pool metadata for the selected pair
           const metadata = await sarosService.getPoolMetadata(selectedTokenPair); // ← NOW DYNAMIC
-          console.log(`📊 Real pool metadata for ${selectedTokenPair}:`, metadata);
         }
       } catch (error) {
-        console.error(`❌ Real Saros integration test failed for ${selectedTokenPair}:`, error);
       }
     };
     
@@ -79,12 +73,8 @@ export default function Home() {
     setSelectedTokenPair(formData.tokenPair);
     
     try {
-      console.log('Fetching real price data for:', formData.tokenPair, formData.timePeriod);
-      
       // Fetch real price data
       const priceData = await fetchPriceData(formData.tokenPair, formData.timePeriod);
-      
-      console.log(`Got ${priceData.length} price data points`);
       
       const backtester = new DLMMBacktester();
 
@@ -119,7 +109,6 @@ export default function Home() {
       });
       
     } catch (error) {
-      console.error('Backtest failed:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
@@ -133,9 +122,6 @@ export default function Home() {
     
     try {
       const comparisonTokenPair = formData.tokenPair; // ← Use form data
-      
-      console.log(`Fetching price data for strategy comparison on ${comparisonTokenPair}...`);
-      console.log(`Using investment: $${formData.investmentAmount}, period: ${formData.timePeriod}`);
       
       const priceData = await fetchPriceData(comparisonTokenPair, formData.timePeriod); // ← Use form data
       
@@ -192,13 +178,11 @@ export default function Home() {
       });
       
     } catch (error) {
-      console.error('Comparison failed:', error);
       setError(error instanceof Error ? error.message : 'Comparison failed');
     } finally {
       setLoading(false);
     }
   };
-  
   
   const getStrategyNames = () => {
     if (currentStrategy === 'comparison') {
@@ -245,9 +229,8 @@ export default function Home() {
     );
   }
   
-  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden max-w-full">
       {/* Header */}
       <Header/>
 
@@ -267,8 +250,6 @@ export default function Home() {
                 selectedTokenPair={selectedTokenPair}
                 onTokenPairChange={setSelectedTokenPair}
               />
-
-
             </div>
 
 {/* Right Content - Results */}

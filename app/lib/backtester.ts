@@ -15,7 +15,6 @@ export class DLMMBacktester {
 
   // Main method now uses REAL Saros SDK
   public async simulateStrategy(params: StrategyParams): Promise<BacktestResult> {
-    console.log(`🚀 Starting REAL Saros DLMM backtest for ${params.tokenPair}`);
     
     try {
       // Use Saros SDK backed calculation (returns results + pool health)
@@ -33,7 +32,6 @@ export class DLMMBacktester {
       return formatted;
       
     } catch (error) {
-      console.warn('⚠️ Real Saros integration failed, falling back to enhanced simulation:', error);
       
       // Fallback to enhanced simulation if SDK fails
       return this.simulateStrategyFallback(params);
@@ -64,10 +62,7 @@ export class DLMMBacktester {
       }
     }
 
-    console.log(`✅ Formatted results from REAL Saros data:`);
-    console.log(`   💰 Total fees: $${finalResult.cumulativeFees.toFixed(2)}`);
-    console.log(`   📊 Days in range: ${daysInRange}/${totalDays} (${((daysInRange/totalDays)*100).toFixed(1)}%)`);
-    console.log(`   🎯 Final P&L: $${finalResult.netPL.toFixed(2)}`);
+
 
     return {
       totalInvestment: params.investmentAmount,
@@ -89,7 +84,7 @@ export class DLMMBacktester {
 
   // Fallback simulation methods (keep your existing logic)
   private simulateStrategyFallback(params: StrategyParams): BacktestResult {
-    console.log('🔄 Using fallback simulation with enhanced calculations');
+
     
     switch (params.strategyType) {
       case StrategyType.CONCENTRATED:

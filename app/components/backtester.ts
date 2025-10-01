@@ -165,6 +165,6 @@ const testParams: StrategyParams = {
 };
 
 const result = backtester.simulateConcentratedStrategy(testParams);
-console.log('Backtest Results:', result);
+
 
 export default DLMMBacktester;

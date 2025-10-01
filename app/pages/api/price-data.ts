@@ -20,7 +20,6 @@ export default async function handler(
       });
     }
 
-    console.log(`Fetching price data for ${tokenPair} over ${timePeriod}`);
     
     const priceData = await priceDataService.fetchHistoricalPrices(
       tokenPair as string,
@@ -42,7 +41,6 @@ export default async function handler(
     });
 
   } catch (error) {
-    console.error('Price data API error:', error);
     res.status(500).json({ 
       message: 'Failed to fetch price data',
       error: error instanceof Error ? error.message : 'Unknown error'

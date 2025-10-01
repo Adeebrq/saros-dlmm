@@ -5,8 +5,6 @@ import { useRive } from '@rive-app/react-canvas';
 import { VerticalSeparator } from '../seperator';
 import {HorizontalSeparator } from '../seperator';
 
-
-
 // Custom hook for viewport detection
 const useInViewport = (threshold = 0.5) => {
   const ref = useRef(null);
@@ -62,104 +60,72 @@ const RiveCard: React.FC<RiveCardProps> = ({
   const { ref, isInView, hasTriggeredRef } = useInViewport(0.3);
   const [isReady, setIsReady] = useState(false);
   
-  console.log(`[${artboard}] Component render - isInView: ${isInView}, hasTriggered: ${hasTriggeredRef.current}, isReady: ${isReady}`);
-  
   const { rive, RiveComponent } = useRive({
     src: '/ui_cards_bento.riv',
     artboard: artboard,
     stateMachines: stateMachine,
     autoplay: false,
-    onLoadedMetadata: () => {
-      console.log(`[${artboard}] 🎬 Metadata loaded`);
-    },
     onLoad: () => {
-      console.log(`[${artboard}] 🎬 OnLoad fired`);
       setIsReady(true);
     },
-    onStateChange: (event: any) => {
-      console.log(`[${artboard}] 🎬 State changed:`, event);
-    }
   });
 
-  // Log rive instance changes
+  // Handle rive instance changes
   useEffect(() => {
-    console.log(`[${artboard}] 📊 Rive instance changed - exists: ${!!rive}`);
     if (rive) {
-      console.log(`[${artboard}] 📊 Rive methods:`, Object.getOwnPropertyNames(Object.getPrototypeOf(rive)));
-      console.log(`[${artboard}] 📊 Trying to access state machine...`);
-      
       // Try different methods to access inputs
       try {
         // Method 1: Direct access
         const inputs1 = rive.stateMachineInputs(stateMachine);
-        console.log(`[${artboard}] Method 1 - stateMachineInputs:`, inputs1);
       } catch (e) {
-        console.error(`[${artboard}] Method 1 failed:`, e);
       }
 
       try {
         // Method 2: Check if there's a play method
         if (typeof rive.play === 'function') {
-          console.log(`[${artboard}] ✅ Play method exists`);
           rive.play();
         }
       } catch (e) {
-        console.error(`[${artboard}] Play failed:`, e);
       }
     }
   }, [rive, stateMachine, artboard]);
 
   // Trigger animation when in viewport
   useEffect(() => {
-    console.log(`[${artboard}] 🎯 Viewport check - isInView: ${isInView}, rive: ${!!rive}, isReady: ${isReady}, hasTriggered: ${hasTriggeredRef.current}`);
-    
     if (isInView && rive && isReady && !hasTriggeredRef.current) {
-      console.log(`[${artboard}] 🚀 ATTEMPTING TO FIRE ANIMATION - Looking for: ${activeInputName}`);
-      
       // Try multiple approaches
       try {
         const inputs = rive.stateMachineInputs(stateMachine);
-        console.log(`[${artboard}] Got inputs:`, inputs);
         
         if (inputs && inputs.length > 0) {
-          console.log(`[${artboard}] All inputs:`, inputs.map((i: any) => i.name));
           const activeInput = inputs.find((i: any) => i.name === activeInputName);
-          console.log(`[${artboard}] Active input (${activeInputName}):`, activeInput);
           
           if (activeInput && typeof activeInput.fire === 'function') {
-            console.log(`[${artboard}] 💥 FIRING ${activeInputName} INPUT`);
             activeInput.fire();
             hasTriggeredRef.current = true;
-          } else {
-            console.log(`[${artboard}] ⚠️ ${activeInputName} input not found or no fire method`);
           }
         } else {
-          console.log(`[${artboard}] ⚠️ No inputs found, trying play...`);
           if (typeof rive.play === 'function') {
             rive.play();
             hasTriggeredRef.current = true;
           }
         }
       } catch (error) {
-        console.error(`[${artboard}] ❌ Error:`, error);
       }
     }
   }, [isInView, rive, isReady, artboard, stateMachine, hasTriggeredRef, activeInputName]);
 
   const handleMouseEnter = () => {
-    console.log(`[${artboard}] 🖱️ Mouse enter - Looking for: ${hoverInputName}`);
     if (hasHover && rive) {
       try {
         const inputs = rive.stateMachineInputs(stateMachine);
         if (inputs) {
           const hoverInput = inputs.find((i: any) => i.name === hoverInputName);
           if (hoverInput && typeof hoverInput.fire === 'function') {
-            console.log(`[${artboard}] 💥 FIRING ${hoverInputName}`);
             hoverInput.fire();
           }
         }
       } catch (error) {
-        console.error(`[${artboard}] Hover error:`, error);
       }
     }
   };
@@ -169,20 +135,17 @@ const RiveCard: React.FC<RiveCardProps> = ({
   };
 
   const handleClick = () => {
-    console.log(`[${artboard}] 🖱️ Click - Looking for: ${activeInputName}`);
     if (rive) {
       try {
         const inputs = rive.stateMachineInputs(stateMachine);
         if (inputs) {
           const activeInput = inputs.find((i: any) => i.name === activeInputName);
           if (activeInput && typeof activeInput.fire === 'function') {
-            console.log(`[${artboard}] 💥 FIRING ${activeInputName} (CLICK)`);
             activeInput.fire();
             hasTriggeredRef.current = false; // Reset so it can fire again
           }
         }
       } catch (error) {
-        console.error(`[${artboard}] Click error:`, error);
       }
     }
   };
@@ -209,7 +172,7 @@ const BentoGrid = () => {
 <div>
   {/* Header Section */}
   <div className="w-full border border-edge flex justify-center">
-  <div className="flex flex-col w-fit max-w-5xl border-amber-300 border">
+  <div className="flex flex-col w-fit max-w-5xl">
     
     {/* Top Horizontal Separator */}
     <HorizontalSeparator />
@@ -219,12 +182,12 @@ const BentoGrid = () => {
       {/* Left Vertical Separator */}
       <VerticalSeparator />
       
-      {/* Header Content - Fixed width to match content */}
-      <div className="py-8 px-4 text-center" style={{ width: '922px' }}>
-        <h1 className="text-5xl font-bold text-black mb-3">
+      {/* Header Content - Responsive width */}
+      <div className="py-8 px-4 text-center w-full lg:w-[922px]">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-3">
         <span className='billing-font font-extrabold'>Master DLMM Trading Like a Pro</span>
         </h1>
-        <p className="text-gray-500 text-xl max-w-3xl mx-auto">
+        <p className="text-gray-500 text-base sm:text-lg lg:text-xl max-w-3xl mx-auto">
         Transform market volatility into profit with  <span className='font-extrabold'>cutting-edge analytics, automated backtesting, </span>
         and <span className='font-extrabold'>real-time pool monitoring.</span>
         </p>
@@ -240,23 +203,22 @@ const BentoGrid = () => {
   </div>
 </div>
 
-
   {/* Content Section */}
   <div className="w-full border border-edge flex justify-center">
-    <div className="flex w-fit max-w-5xl border-amber-300 border">
+    <div className="flex w-full lg:w-fit max-w-5xl">
       {/* Left Vertical Separator */}
       <VerticalSeparator />
       
       {/* Main Content */}
-      <div className="py-2 space-y-2">
+      <div className="py-2 space-y-2 w-full">
         
-        {/* First row - 3 cards */}
-        <div className="flex gap-2 justify-center screen-line-before border-x border-edge">
+        {/* First row - 3 cards (stack on mobile) */}
+        <div className="flex flex-col lg:flex-row gap-2 justify-center screen-line-before border-x border-edge">
           <RiveCard 
             artboard="Card 2"
             stateMachine="Card 2 All Motion"
-            containerClassName="h-auto w-[298px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
-            riveClassName="w-[298] h-[320px]"
+            containerClassName="h-auto w-full lg:w-[298px] bg-gray-100 overflow-hidden screen-line-before border-x border-edge"
+            riveClassName="w-full h-[320px]"
             hasHover={true}
             activeInputName="Press"
             hoverInputName="Hover"
@@ -265,8 +227,8 @@ const BentoGrid = () => {
           <RiveCard 
             artboard="Card 4"
             stateMachine="Card 4 Motion"
-            containerClassName="h-auto w-[298px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
-            riveClassName="w-[298] h-[320px]"
+            containerClassName="h-auto w-full lg:w-[298px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
+            riveClassName="w-full h-[320px]"
             hasHover={true}
             activeInputName="Active"
             hoverInputName="Hover"
@@ -275,21 +237,21 @@ const BentoGrid = () => {
           <RiveCard 
             artboard="Card 6"
             stateMachine="Card 6 Motion"
-            containerClassName="h-auto w-[298px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
-            riveClassName="w-[298] h-[320px]"
+            containerClassName="h-auto w-full lg:w-[298px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
+            riveClassName="w-full h-[320px]"
             hasHover={true}
             activeInputName="Active"
             hoverInputName="Hover"
           />
         </div>
         
-        {/* Second row - 2 wide cards */}
-        <div className="flex gap-2 justify-center screen-line-after border-x border-edge">
+        {/* Second row - 2 wide cards (stack on mobile) */}
+        <div className="flex flex-col lg:flex-row gap-2 justify-center screen-line-after border-x border-edge">
           <RiveCard 
             artboard="Card 5"
             stateMachine="Card 5 All Motion"
-            containerClassName="h-auto w-[455px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
-            riveClassName="w-[455] h-[320px]"
+            containerClassName="h-auto w-full lg:w-[455px] bg-white overflow-hidden screen-line-before screen-line-after border-x border-edge"
+            riveClassName="w-full h-[320px]"
             hasHover={true}
             activeInputName="Active"
             hoverInputName="Hover"
@@ -298,8 +260,8 @@ const BentoGrid = () => {
           <RiveCard 
             artboard="Card 7"
             stateMachine="Card 7 All Motion"
-            containerClassName="h-auto w-[455px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
-            riveClassName="w-[455] h-[320px]"
+            containerClassName="h-auto w-full lg:w-[455px] bg-gray-100 overflow-hidden screen-line-before screen-line-after border-x border-edge"
+            riveClassName="w-full h-[320px]"
             hasHover={false}
             activeInputName="Active"
             hoverInputName="Hover"
@@ -313,9 +275,6 @@ const BentoGrid = () => {
     </div>
   </div>
 </div>
-
-
-
 
   );
 };

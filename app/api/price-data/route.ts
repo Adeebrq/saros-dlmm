@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Price data API error:', error);
     return NextResponse.json(
       {
         message: 'Failed to fetch price data',
