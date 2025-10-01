@@ -45,7 +45,6 @@ export default function ResultsDisplay({
   const isComparison = results.length > 1;
   const isSingle = results.length === 1;
 
-  const [baseToken, quoteToken] = tokenPair.split('/');
 
   const getPoolStatus = () => {
     if (!poolHealthData) return { type: 'unknown', message: 'Pool data unavailable' };
@@ -90,7 +89,7 @@ export default function ResultsDisplay({
       <Panel className="bg-white text-black  transition-all duration-300">
         <PanelHeader>
           <PanelTitle className="text-2xl font-semibold mb-0">
-            {baseToken}/{quoteToken} Pool Analysis
+          {tokenPair} Pool Analysis
           </PanelTitle>
         </PanelHeader>
 
@@ -106,7 +105,7 @@ export default function ResultsDisplay({
                     </svg>
                   </div>
                   <div>
-                    <p className="text-gray-600">Saros DLMM Pool Analysis</p>
+                    <p className="text-gray-600">{tokenPair}</p>
                   </div>
                 </div>
                 <div className="text-right">

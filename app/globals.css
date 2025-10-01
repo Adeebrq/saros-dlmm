@@ -55,52 +55,30 @@ body {
   font-display: swap;
 }
 
-/* Then use it in your classes */
 .dimitri-font {
   font-family: 'Dimitri', sans-serif;
 }
 
 
-/* Header background image swap for welcome title */
-.heroTitle {
-  background-image: url('/right1.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-.heroTitle:hover {
-  background-image: url('/right2.png');
+
+
+
+@font-face {
+  font-family: 'Billing';
+  src: url('/Billing.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
-/* Welcome hero box background image swap */
-.heroBox {
-  background-image: url('/right1.svg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-.heroBox:hover {
-  background-image: url('/right2.svg');
+.billing-font {
+  font-family: 'Billing', sans-serif;
 }
 
-/* Left sidebar form box background image swap */
-.leftBox {
-  background-image: url('/left1.png');
-  background-repeat: no-repeat;
+.hero-bg {
+  background-image: url('/assets/hero.png');
   background-size: cover;
   background-position: center;
-}
-.leftBox:hover {
-  background-image: url('/left2.png');
-}
-
-/* Results header background image swap */
-.poolHeader {
-  background-image: url('/header1.png');
   background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-.poolHeader:hover {
-  background-image: url('/header2.png');
+  background-attachment: fixed;
 }

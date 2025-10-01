@@ -17,27 +17,38 @@ interface FormData {
 interface BacktesterFormProps {
   onSubmit: (data: FormData) => void;
   loading: boolean;
-  onCompare?: () => void;
+  onCompare?: (data: FormData) => void; 
   selectedTokenPair?: string;
+  onTokenPairChange?: (tokenPair: string) => void; 
 }
+
 
 export default function BacktesterForm({
   onSubmit,
   loading,
   onCompare,
   selectedTokenPair = '',
+  onTokenPairChange,
 }: BacktesterFormProps) {
   const [formData, setFormData] = useState<FormData>({
     investmentAmount: 5000,
     strategyType: StrategyType.CONCENTRATED,
-    tokenPair: "SOL/USDC",
+    tokenPair: "", // Start with empty string to force selection
     concentrationMin: 49,
     concentrationMax: 52,
     rebalanceThreshold: 0.05,
     timePeriod: "90d",
   });
 
+  // Track if user has manually selected a token pair
+  const [hasSelectedTokenPair, setHasSelectedTokenPair] = useState(false);
+
   const validateForm = (): string | null => {
+    // Check if token pair is selected first
+    if (!formData.tokenPair || formData.tokenPair === "") {
+      return "Please select a token pair first";
+    }
+
     if (formData.investmentAmount < 100) {
       return "Investment amount must be at least $100";
     }
@@ -60,8 +71,25 @@ export default function BacktesterForm({
     return null;
   };
 
+  const checkTokenPairSelection = (): boolean => {
+    if (!hasSelectedTokenPair || !formData.tokenPair || formData.tokenPair === "") {
+      toast.error('Please select a token pair first!', {
+        duration: 3000,
+        position: 'top-right',
+        icon: '⚠️',
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check token pair selection first
+    if (!checkTokenPairSelection()) {
+      return;
+    }
     
     // Validate form before submission
     const validationError = validateForm();
@@ -98,7 +126,12 @@ export default function BacktesterForm({
 
   const handleCompareAll = async () => {
     if (!onCompare) return;
-
+  
+    // Check token pair selection first
+    if (!checkTokenPairSelection()) {
+      return;
+    }
+  
     // Validation before comparison
     const validationError = validateForm();
     if (validationError) {
@@ -108,14 +141,15 @@ export default function BacktesterForm({
       });
       return;
     }
-
+  
     // Show loading toast for comparison
     const loadingToastId = toast.loading('Comparing all strategies...', {
       position: 'top-right',
     });
-
+  
     try {
-      await onCompare();
+      // Pass current form data to comparison function
+      await onCompare(formData); // ← Pass form data
       
       // Success toast
       toast.success('Strategy comparison completed!', {
@@ -130,6 +164,7 @@ export default function BacktesterForm({
       });
     }
   };
+  
 
   const updateFormData = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -168,6 +203,19 @@ export default function BacktesterForm({
     }
   };
 
+  const handleTokenPairChange = (value: string) => {
+    updateFormData("tokenPair", value);
+    setHasSelectedTokenPair(true); // Mark as selected
+    onTokenPairChange?.(value); // Call parent callback
+    toast.success(`Token pair changed to ${value}`, {
+      duration: 2000,
+      position: 'bottom-right',
+    });
+  };
+
+  // Check if buttons should be disabled
+  const buttonsDisabled = loading || !hasSelectedTokenPair || !formData.tokenPair || formData.tokenPair === "";
+
   return (
     <Panel className="bg-white text-black shadow-lg transition-all duration-300">
       <PanelHeader>
@@ -197,19 +245,15 @@ export default function BacktesterForm({
           {/* Token Pair */}
           <div className="border-b border-edge py-1 -mx-1 px-1">
             <label className="block text-sm font-medium text-gray-700 mb-2 border-y border-edge py-1 -mx-1 px-1">
-              Token Pair
+              Token Pair <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.tokenPair}
-              onChange={(e) => {
-                updateFormData("tokenPair", e.target.value);
-                toast.success(`Token pair changed to ${e.target.value}`, {
-                  duration: 2000,
-                  position: 'bottom-right',
-                });
-              }}
+              onChange={(e) => handleTokenPairChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
+              <option value="">Select a token pair...</option>
               <option value="UNIBTC/XBTC">UNIBTC/XBTC</option>
               <option value="USDS/USDC">USDS/USDC</option>
               <option value="DZSOL/SOL">DZSOL/SOL</option>
@@ -358,7 +402,7 @@ export default function BacktesterForm({
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={buttonsDisabled}
             className={`
               w-full
               px-4 py-3 sm:px-6 sm:py-3
@@ -367,14 +411,10 @@ export default function BacktesterForm({
               text-sm sm:text-base
               active:scale-95
               transform
-              bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] 
-              hover:from-[#2D1B85] hover:to-[#4A2F9A]
-              transition-all duration-300 hover:scale-105
-              shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)]
-              hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]
-              ${loading 
-                ? "pointer-events-none opacity-60 cursor-not-allowed" 
-                : "cursor-pointer"
+              transition-all duration-300 
+              ${buttonsDisabled
+                ? "bg-gray-400 cursor-not-allowed opacity-60" 
+                : "bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] hover:from-[#2D1B85] hover:to-[#4A2F9A] hover:scale-105 cursor-pointer shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)] hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]"
               }
             `}
           >
@@ -386,7 +426,7 @@ export default function BacktesterForm({
             <button
               type="button"
               onClick={handleCompareAll}
-              disabled={loading || !onCompare}
+              disabled={buttonsDisabled || !onCompare}
               className={`
                 w-full
                 px-4 py-3 sm:px-6 sm:py-3
@@ -395,18 +435,14 @@ export default function BacktesterForm({
                 text-sm sm:text-base
                 active:scale-95
                 transform
-                bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] 
-                hover:from-[#2D1B85] hover:to-[#4A2F9A]
-                transition-all duration-300 hover:scale-105
-                shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)]
-                hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]
-                ${loading || !onCompare
-                  ? "pointer-events-none opacity-60 cursor-not-allowed" 
-                  : "cursor-pointer"
+                transition-all duration-300
+                ${buttonsDisabled || !onCompare
+                  ? "bg-gray-400 cursor-not-allowed opacity-60" 
+                  : "bg-gradient-to-b from-[#1A0E70] to-[#2D1B85] hover:from-[#2D1B85] hover:to-[#4A2F9A] hover:scale-105 cursor-pointer shadow-[inset_0_0_18px_0_rgb(123,97,255),inset_0_0_6px_0_rgba(147,125,255,0.8)] hover:shadow-[inset_0_0_6px_0_rgb(123,97,255),inset_0_0_3px_0_rgba(147,125,255,0.6)]"
                 }
               `}
             >
-              {loading ? 'Running...' : `Compare All Strategies${selectedTokenPair ? ` (${selectedTokenPair})` : ''}`}
+              {loading ? 'Running...' : `Compare All Strategies${formData.tokenPair ? ` (${formData.tokenPair})` : ''}`}
             </button>
           </div>
         </form>
