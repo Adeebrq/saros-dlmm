@@ -1,5 +1,3 @@
-// src/pages/api/price-data.ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import { priceDataService } from '../../lib/priceDataService';
 

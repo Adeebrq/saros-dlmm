@@ -1,5 +1,3 @@
-// src/lib/priceDataService.ts
-
 import { PriceData } from '../types/index';
 
 interface JupiterPriceResponse {
@@ -50,26 +48,20 @@ export class PriceDataService {
       // Try Birdeye first (best for Solana historical data)
       const birdeyeData = await this.fetchFromBirdeye(baseToken, quoteToken, timePeriod);
       if (birdeyeData.length > 0) {
-        console.log(`Fetched ${birdeyeData.length} data points from Birdeye`);
         return birdeyeData;
       }
     } catch (error) {
-      console.warn('Birdeye API failed, trying CoinGecko:', error);
     }
 
     try {
       // Fallback to CoinGecko
       const coingeckoData = await this.fetchFromCoinGecko(baseToken, quoteToken, timePeriod);
       if (coingeckoData.length > 0) {
-        console.log(`Fetched ${coingeckoData.length} data points from CoinGecko`);
         return coingeckoData;
       }
     } catch (error) {
-      console.warn('CoinGecko API failed:', error);
     }
 
-    // If all APIs fail, return mock data with warning
-    console.warn('All APIs failed, using mock data');
     return this.generateMockData(timePeriod);
   }
 

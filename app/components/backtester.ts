@@ -1,6 +1,3 @@
-// backtester.ts - FIXED WITH TOKEN PAIR
-
-// Types
 interface PriceData {
   timestamp: string;
   price: number;

@@ -1,5 +1,3 @@
-// src/lib/sarosService.ts - DYNAMIC DECIMAL DETECTION FROM SAROS SDK
-
 import { LiquidityBookServices, MODE } from '@saros-finance/dlmm-sdk';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { PriceData, StrategyParams, DailyResult } from '../types/index';
@@ -66,7 +64,6 @@ const REAL_SAROS_POOLS = {
     address: 'Cy75bt7SkreqcEE481HsKChWJPM7kkS3svVWKRPpS9UK',
     baseTicker: 'LAUNCHCOIN',
     quoteTicker: 'USDC'
-
 }
 };
 
@@ -92,7 +89,6 @@ export class SarosService {
 
   constructor() {
     const rpcUrl = process.env.SOLANA_RPC_URL || process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-    console.log(`🔧 Using Solana RPC URL: ${rpcUrl}`);
     
     this.liquidityBook = new LiquidityBookServices({
       mode: MODE.MAINNET,
@@ -103,23 +99,13 @@ export class SarosService {
     });
     
     this.connection = new Connection(rpcUrl, 'confirmed');
-    
-    console.log('🎯 DYNAMIC Saros Integration - SDK-Provided Decimals');
-    try {
-      console.log(`📍 Program: ${this.liquidityBook.getDexProgramId().toString()}`);
-    } catch (error) {
-      console.log(`📍 Program Address: ${SAROS_PROGRAM_ADDRESSES.mainnet}`);
-    }
   }
 
   async discoverRealPools(): Promise<string[]> {
     try {
-      console.log('🔍 Discovering real Saros DLMM pools...');
       const poolAddresses = await this.liquidityBook.fetchPoolAddresses();
-      console.log(`✅ Found ${poolAddresses.length} real Saros pools!`);
       return poolAddresses;
     } catch (error) {
-      console.error('❌ Failed to discover pools:', error);
       return [];
     }
   }
@@ -147,18 +133,10 @@ export class SarosService {
         // Use SDK-provided decimals (but they're swapped!)
         actualBaseDecimals = metadata.extra.tokenQuoteDecimal;
         actualQuoteDecimals = metadata.extra.tokenBaseDecimal;
-        
-        console.log(`🔍 SDK Decimal Discovery for ${tokenPair}:`);
-        console.log(`   SDK tokenBaseDecimal: ${metadata.extra.tokenBaseDecimal} → Using as QUOTE decimals`);
-        console.log(`   SDK tokenQuoteDecimal: ${metadata.extra.tokenQuoteDecimal} → Using as BASE decimals`);
       } else {
         // Fallback to our known decimals
         actualBaseDecimals = FALLBACK_DECIMALS[poolConfig.baseTicker as keyof typeof FALLBACK_DECIMALS] || 6;
         actualQuoteDecimals = FALLBACK_DECIMALS[poolConfig.quoteTicker as keyof typeof FALLBACK_DECIMALS] || 6;
-        
-        console.log(`⚠️ SDK decimals not available for ${tokenPair}, using fallback:`);
-        console.log(`   Base (${poolConfig.baseTicker}): ${actualBaseDecimals} decimals`);
-        console.log(`   Quote (${poolConfig.quoteTicker}): ${actualQuoteDecimals} decimals`);
       }
       
       // Parse raw reserves with dynamically detected decimals
@@ -226,20 +204,10 @@ export class SarosService {
         feeRate: (pairAccount.staticFeeParameters?.baseFactor || 0) / 1000000,
         poolConfig
       };
-
-      console.log(`📊 DYNAMIC Saros Pool Data for ${poolConfig.address.slice(0, 8)} (${tokenPair}):`);
-      console.log(`   Raw Base Reserve: ${baseReserveRaw.toLocaleString()}`);
-      console.log(`   Raw Quote Reserve: ${quoteReserveRaw.toLocaleString()}`);
-      console.log(`   Actual Base Tokens: ${baseTokenAmount.toLocaleString()} ${poolConfig.baseTicker} (${actualBaseDecimals} decimals)`);
-      console.log(`   Actual Quote Tokens: ${quoteTokenAmount.toLocaleString()} ${poolConfig.quoteTicker} (${actualQuoteDecimals} decimals)`);
-      console.log(`   Estimated USD Liquidity: $${realData.totalLiquidity.toLocaleString()}`);
-      console.log(`   Base Fee: ${realData.baseFee} basis points (${(realData.feeRate * 100).toFixed(4)}%)`);
-      console.log(`   Status: ${realData.isActive ? '✅ Active' : '🪦 Inactive'}`);
       
       return realData;
       
     } catch (error) {
-      console.error('❌ Failed to extract pool data:', error);
       throw error;
     }
   }
@@ -272,8 +240,6 @@ export class SarosService {
     params: StrategyParams, 
     priceData: PriceData[]
   ): Promise<SarosBacktestResult> {
-    console.log(`🚀 DYNAMIC calculation for ${params.tokenPair}`);
-    
     try {
       const poolData = await this.extractRealPoolData(params.tokenPair);
       
@@ -281,13 +247,8 @@ export class SarosService {
       const estimatedDailyVolume = this.estimatePoolVolume(priceData, poolData.totalLiquidity);
       
       if (!poolData.isActive) {
-        console.log(`⚠️ LOW LIQUIDITY POOL WARNING: ${params.tokenPair}`);
-        console.log(`   Pool Liquidity: $${poolData.totalLiquidity.toFixed(2)}`);
-        console.log(`   Your Investment: $${params.investmentAmount.toLocaleString()}`);
         if (poolData.totalLiquidity > 0) {
-          console.log(`   Your Position Size: ${((params.investmentAmount / poolData.totalLiquidity) * 100).toFixed(1)}% of pool`);
         }
-        console.log(`   🎯 Expected Result: Minimal returns due to low activity`);
       }
 
       // Calculate results with dynamic data
@@ -302,22 +263,12 @@ export class SarosService {
         warning: this.generatePoolWarning(poolData, params.investmentAmount)
       };
 
-      console.log(`📊 DYNAMIC Pool Health Summary:`);
-      console.log(`   Liquidity: $${poolHealthData.totalLiquidity.toLocaleString()}`);
-      console.log(`   Est. Daily Volume: $${poolHealthData.volume24h.toLocaleString()}`);
-      console.log(`   Status: ${poolHealthData.isActive ? 'Active' : 'Low Activity'}`);
-      if (poolHealthData.warning) {
-        console.log(`   Warning: ${poolHealthData.warning}`);
-      }
-
       return {
         results,
         poolHealthData
       };
 
     } catch (error) {
-      console.error('❌ Dynamic Saros integration failed:', error);
-      
       return {
         results: [],
         poolHealthData: {
@@ -359,8 +310,6 @@ export class SarosService {
     priceData: PriceData[],
     poolData: any
   ): Promise<DailyResult[]> {
-    console.log('🎯 Calculating with DYNAMIC decimals from Saros SDK');
-    
     const results: DailyResult[] = [];
     let totalFees = 0;
     
@@ -371,10 +320,6 @@ export class SarosService {
     // Calculate realistic pool share
     const yourActualPoolShare = poolData.totalLiquidity > 0 ? 
       params.investmentAmount / (poolData.totalLiquidity + params.investmentAmount) : 0;
-    
-    console.log(`💰 Your REALISTIC pool ownership: ${(yourActualPoolShare * 100).toFixed(4)}%`);
-    console.log(`📊 Pool has $${poolData.totalLiquidity.toLocaleString()} total liquidity`);
-    console.log(`🔢 Using decimals: Base=${poolData.actualBaseDecimals}, Quote=${poolData.actualQuoteDecimals}`);
     
     for (let i = 0; i < priceData.length; i++) {
       const dayData = priceData[i];
@@ -420,13 +365,6 @@ export class SarosService {
     }
     
     const daysInRange = results.filter(r => r.inRange).length;
-    
-    console.log(`✅ DYNAMIC calculation completed:`);
-    console.log(`   💰 $${totalFees.toFixed(2)} total fees (realistic estimate)`);
-    console.log(`   📊 ${daysInRange}/${results.length} days in range (${((daysInRange/results.length)*100).toFixed(1)}%)`);
-    console.log(`   📈 Pool liquidity: $${poolData.totalLiquidity.toLocaleString()} (SDK-DETECTED)`);
-    console.log(`   🏆 Your pool share: ${(yourActualPoolShare * 100).toFixed(4)}%`);
-    console.log(`   🎯 Decimals used: ${poolData.actualBaseDecimals}/${poolData.actualQuoteDecimals}`);
     
     return results;
   }
@@ -498,20 +436,9 @@ export class SarosService {
   // Test connection with dynamic data
   async testConnection(tokenPair: string = 'SOL/USDC'): Promise<boolean> {
     try {
-      console.log('🧪 Testing DYNAMIC Saros connection with SDK decimals...');
-      
       const poolData = await this.extractRealPoolData(tokenPair);
-      
-      console.log('✅ DYNAMIC Saros connection successful!');
-      console.log('   🎯 Results now show SDK-detected decimals and realistic pool sizes');
-      console.log(`   📊 Pool Status: ${poolData.isActive ? 'Active' : 'Low Activity'}`);
-      console.log(`   💰 Pool Size: $${poolData.totalLiquidity.toLocaleString()} (DYNAMIC)`);
-      console.log(`   🔢 Decimals: ${poolData.actualBaseDecimals}/${poolData.actualQuoteDecimals}`);
-      
       return true;
-      
     } catch (error) {
-      console.error('❌ Dynamic Saros connection failed:', error);
       return false;
     }
   }
@@ -524,20 +451,10 @@ export class SarosService {
       }
       
       const metadata = await this.liquidityBook.fetchPoolMetadata(poolConfig.address);
-      console.log('📋 RAW Saros Pool Metadata:', metadata);
-      console.log('📋 Pool Configuration:', poolConfig);
-      
-      // Show the decimal detection logic
-      if (metadata.extra?.tokenQuoteDecimal !== undefined) {
-        console.log('🔍 Decimal Detection:');
-        console.log(`   SDK tokenBaseDecimal: ${metadata.extra.tokenBaseDecimal} (will use as quote decimals)`);
-        console.log(`   SDK tokenQuoteDecimal: ${metadata.extra.tokenQuoteDecimal} (will use as base decimals)`);
-      }
       
       return { metadata, poolConfig };
       
     } catch (error) {
-      console.error('Failed to fetch metadata:', error);
       return { error: 'Failed to fetch pool metadata' };
     }
   }

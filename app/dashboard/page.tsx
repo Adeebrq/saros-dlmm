@@ -1,5 +1,3 @@
-// src/pages/index.tsx - FIXED VERSION
-
 "use client"
 
 import { useState, useEffect } from 'react';
@@ -11,6 +9,7 @@ import { sarosService } from '../lib/sarosService';
 import { cn } from "../lib/utils";
 import {PanelTitle, Panel, PanelContent , PanelHeader} from "../components/panel"
 import Header from '../components/Header';
+import { Footer } from '../components/sections/footer';
 
 interface FormData {
   investmentAmount: number;
@@ -367,6 +366,7 @@ export default function Home() {
           <VerticalSeparator/>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }

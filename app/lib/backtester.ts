@@ -1,5 +1,3 @@
-// src/lib/backtester.ts - Updated with REAL Saros Integration
-
 import { sarosService } from './sarosService';
 import { 
   PriceData, 

@@ -97,35 +97,41 @@ export default function ResultsDisplay({
           <div className="border-x border-y border-edge py-1 -mx-1 px-1">
             {/* Pool Header Info */}
             <div className="border-b border-edge py-1 -mx-1 px-1">
-              <div className="flex items-center justify-between mb-4 border-y border-edge py-1 -mx-1 px-1">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-blue-100 p-2 rounded-lg border border-edge">
-                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">{tokenPair}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-  <div className="text-sm text-gray-500">Pool Address</div>
-  <div 
-    className="text-xs font-mono text-gray-700 bg-white px-2 py-1 rounded border border-edge cursor-pointer hover:bg-gray-50 transition-colors duration-200 active:scale-95"
-    onClick={() => {
-      if (poolHealthData?.poolAddress) {
-        navigator.clipboard.writeText(poolHealthData.poolAddress);
-        toast.success("Pool Address Copied!")
-      }
-    }}
-    title="Click to copy full address"
-  >
-    {poolHealthData?.poolAddress ? `${poolHealthData.poolAddress.slice(0, 8)}...${poolHealthData.poolAddress.slice(-8)}` : 'N/A'}
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-y border-edge py-1 -mx-1 px-1">
+    <div className="flex items-center space-x-3">
+      <div className="bg-blue-100 p-2 rounded-lg border border-edge">
+        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+      <div>
+        <p className="text-gray-600 font-semibold">{tokenPair}</p>
+      </div>
+    </div>
+    
+    <div className="text-left sm:text-right">
+      <div className="text-sm text-gray-500 mb-1">Pool Address</div>
+      <div 
+        className="text-xs font-mono text-gray-700 bg-white px-2 py-1 rounded border border-edge cursor-pointer hover:bg-gray-50 transition-colors duration-200 active:scale-95 break-all sm:break-normal max-w-full overflow-hidden"
+        onClick={() => {
+          if (poolHealthData?.poolAddress) {
+            navigator.clipboard.writeText(poolHealthData.poolAddress);
+            toast.success("Pool Address Copied!")
+          }
+        }}
+        title="Click to copy full address"
+      >
+        <span className="hidden sm:inline">
+          {poolHealthData?.poolAddress ? `${poolHealthData.poolAddress.slice(0, 8)}...${poolHealthData.poolAddress.slice(-8)}` : 'N/A'}
+        </span>
+        <span className="sm:hidden">
+          {poolHealthData?.poolAddress ? `${poolHealthData.poolAddress.slice(0, 6)}...${poolHealthData.poolAddress.slice(-6)}` : 'N/A'}
+        </span>
+      </div>
+    </div>
   </div>
 </div>
 
-              </div>
-            </div>
 
             {/* Pool Metrics Grid */}
             <div className="border-b border-edge py-1 -mx-1 px-1">
