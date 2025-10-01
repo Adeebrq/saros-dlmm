@@ -30,7 +30,12 @@ SaroScope is a DLMM backtesting platform for Solana's Dynamic Liquidity Market M
 - 📱 **Mobile responsive**  
 SarosScope supports accesibility across all devices.
 
-![SaroScope Analytics](https://via.placeholder.com/800x400/2d2d2d/ffffff?text=Advanced+DLMM+Analytics+Dashboard)
+## 🎥 Demo Video
+
+[![SaroScope Demo](https://img.youtube.com/vi/OB5VwghdndA/maxresdefault.jpg)](https://youtu.be/OB5VwghdndA)
+
+*Click the thumbnail above to watch the full demo (3:53)*
+
 
 ## Tech Stack
 
